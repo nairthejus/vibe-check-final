@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 
-// Buckets by valence/energy quadrant
 const QUAD_LIB = {
   highHigh: [
     { title: "Levitating", artist: "Dua Lipa" },
@@ -24,7 +23,6 @@ const QUAD_LIB = {
   ],
 };
 
-// Light activity-based presets to blend in
 const ACTIVITY_LIB = {
   Workout: [
     { title: "POWER", artist: "Kanye West" },
@@ -58,6 +56,15 @@ const ACTIVITY_LIB = {
   ],
 };
 
+const ACTIVITIES = [
+  { label: "Workout", color: "bg-rose-500" },
+  { label: "Focus",   color: "bg-purple-500" },
+  { label: "Commute", color: "bg-cyan-500" },
+  { label: "Relax",   color: "bg-emerald-500" },
+  { label: "Party",   color: "bg-amber-500" },
+  { label: "Study",   color: "bg-indigo-500" },
+];
+
 function pickQuadrant({ valence, energy }) {
   if (energy >= 0.5 && valence >= 0.5) return 'highHigh';
   if (energy >= 0.5 && valence < 0.5)  return 'highLow';
@@ -65,23 +72,44 @@ function pickQuadrant({ valence, energy }) {
   return 'lowLow';
 }
 
-export default function Playlist({ vals, activity, onBack }) {
+// Small helper to shuffle for variety (stable enough for demo)
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor((Math.sin(i * 9301 + 49297) * 233280) % (i + 1));
+    const idx = Math.abs(j);
+    [a[i], a[idx]] = [a[idx], a[i]];
+  }
+  return a;
+}
+
+export default function Playlist({ vals, activity, setActivity, onBack }) {
   const [explore, setExplore] = useState(30); // 0..100
   const quad = useMemo(() => pickQuadrant(vals), [vals]);
 
-  // Blend logic: base on quadrant; as exploration increases, add activity & cross-quadrant tracks
+  // Live recompute whenever quad, activity, or explore changes
   const tracks = useMemo(() => {
     const base = QUAD_LIB[quad] ?? [];
     const act = activity ? (ACTIVITY_LIB[activity] ?? []) : [];
-    if (explore < 34) return [...base, ...act].slice(0, 8);
 
-    // medium explore: mix base + activity + one neighbor
+    if (explore < 34) return shuffle([...base, ...act]).slice(0, 8);
+
     const neighbor = quad === 'highHigh' ? 'lowHigh'
                   : quad === 'lowHigh'  ? 'highHigh'
                   : quad === 'highLow'  ? 'lowLow'
                   : 'highLow';
-    const mix = [...base, ...act, ...(QUAD_LIB[neighbor] ?? [])];
-    return mix.slice(0, 8);
+
+    if (explore < 67) {
+      return shuffle([...base, ...act, ...(QUAD_LIB[neighbor] ?? [])]).slice(0, 8);
+    }
+
+    // High exploration: mix broadly
+    const everything = [
+      ...QUAD_LIB.highHigh, ...QUAD_LIB.highLow,
+      ...QUAD_LIB.lowHigh,  ...QUAD_LIB.lowLow,
+      ...act
+    ];
+    return shuffle(everything).slice(0, 8);
   }, [quad, activity, explore]);
 
   const label =
@@ -106,6 +134,25 @@ export default function Playlist({ vals, activity, onBack }) {
         </div>
       </div>
 
+      {/* Activity selector (now on playlist too) */}
+      <div className="mb-4">
+        <div className="mb-2 text-sm text-gray-300">Activity</div>
+        <div className="flex flex-wrap gap-2">
+          {ACTIVITIES.map(a => {
+            const active = activity === a.label;
+            return (
+              <button
+                key={a.label}
+                onClick={() => setActivity(active ? null : a.label)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-transform hover:scale-105 active:scale-95 ${a.color} ${active ? 'ring-4 ring-white/80' : 'opacity-85 hover:opacity-100'}`}
+              >
+                {a.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Exploration control */}
       <div className="bg-gray-800/60 rounded-xl p-4 mb-6">
         <div className="flex items-center justify-between text-sm mb-2">
@@ -127,8 +174,10 @@ export default function Playlist({ vals, activity, onBack }) {
       <ul className="space-y-3">
         {tracks.map((t, i) => (
           <li key={`${t.title}-${i}`} className="flex items-center bg-gray-800/60 rounded-xl p-3 hover:bg-gray-800 transition">
-            <div className="w-10 h-10 rounded-lg mr-3 shadow"
-                 style={{ background: 'linear-gradient(135deg, #22c55e, #f472b6)' }} />
+            <div
+              className="w-10 h-10 rounded-lg mr-3 shadow"
+              style={{ background: 'linear-gradient(135deg, #22c55e, #f472b6)' }}
+            />
             <div className="flex-1">
               <div className="font-semibold">{t.title}</div>
               <div className="text-sm text-gray-400">{t.artist}</div>
