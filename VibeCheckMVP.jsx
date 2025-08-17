@@ -12,19 +12,16 @@ import {
   Info
 } from "lucide-react";
 
-// --- utils ---
+// ---------- utils ----------
 const clamp = (n, min = 0, max = 1) => Math.max(min, Math.min(max, n));
 const lerp = (a, b, t) => a + (b - a) * t;
 
 function sliderToTarget(slider) {
   const t = slider / 100;
-  return {
-    valence: lerp(0.2, 0.9, t), // sadness→happiness
-    energy: lerp(0.2, 0.9, t),  // calm→intense
-  };
+  return { valence: lerp(0.2, 0.9, t), energy: lerp(0.2, 0.9, t) };
 }
 
-// --- seeded catalog (demo) ---
+// ---------- seeded catalog (demo) ----------
 const CATALOG = [
   { id: 't1',  title: 'Moonlit Streets', artist: 'Blue Atlas',   valence: 0.28, energy: 0.35, dance: 0.48, tempo: 78,  genre: 'lofi',        moods: ['calm','melancholy'] },
   { id: 't2',  title: 'Sunburst',        artist: 'Neon Harbor',  valence: 0.86, energy: 0.88, dance: 0.72, tempo: 124, genre: 'pop',         moods: ['happy','energetic'] },
@@ -43,26 +40,23 @@ const CATALOG = [
 const MOOD_CHIPS = ['calm','happy','melancholy','focus','workout','chill','uplifting'];
 const ACTIVITIES = ['Focus','Commute','Workout','Relax'];
 
-// score a track vs. current target, with exploration
+// score a track vs target with exploration & biases
 function scoreTrack(track, target, activityBias, searchTerm, exploration){
   const dv = track.valence - target.valence;
   const de = track.energy - target.energy;
   const dist = Math.sqrt(dv*dv + de*de);
   let base = 1 - dist;
 
-  // activity nudges
   if (activityBias === 'Focus')   base += (1 - track.energy) * 0.15;
   if (activityBias === 'Workout') base += track.energy * 0.15 + (track.tempo > 120 ? 0.05 : 0);
   if (activityBias === 'Commute') base += (track.dance * 0.1) + (track.energy * 0.05);
   if (activityBias === 'Relax')   base += (1 - track.energy) * 0.12 + (1 - track.tempo/140) * 0.05;
 
-  // light search boost
   if (searchTerm){
     const s = searchTerm.toLowerCase();
     if (track.title.toLowerCase().includes(s) || track.artist.toLowerCase().includes(s)) base += 0.1;
   }
 
-  // exploration adds some variety
   const jitter = (Math.random() - 0.5) * exploration * 0.3;
   return base + jitter;
 }
@@ -76,7 +70,7 @@ export default function VibeCheckMVP(){
   const [likes, setLikes] = useState([]);       // track ids
   const [dislikes, setDislikes] = useState([]); // track ids
   const [showActivityNudge, setShowActivityNudge] = useState(false);
-  const [showHelp, setShowHelp] = useState(false); // tooltip toggle
+  const [showHelp, setShowHelp] = useState(false); // <-- tooltip state
 
   // derive target from slider + moods
   const baseTarget = sliderToTarget(slider);
@@ -110,7 +104,7 @@ export default function VibeCheckMVP(){
 
   const nowPlaying = queue[0];
 
-  // mid-session nudge after every 3 plays
+  // mid-session nudge every 3 plays
   useEffect(()=>{
     if (played.length > 0 && played.length % 3 === 0) setShowActivityNudge(true);
   }, [played.length]);
@@ -164,14 +158,7 @@ export default function VibeCheckMVP(){
               <SlidersHorizontal className="w-4 h-4"/>
               <p className="text-sm text-neutral-300">Vibe Range</p>
             </div>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={slider}
-              onChange={e => setSlider(parseInt(e.target.value))}
-              className="w-full"
-            />
+            <input type="range" min={0} max={100} value={slider} onChange={e=>setSlider(parseInt(e.target.value))} className="w-full"/>
             <div className="mt-2 text-xs text-neutral-400">
               Valence: {target.valence.toFixed(2)} · Energy: {target.energy.toFixed(2)}
             </div>
@@ -220,7 +207,7 @@ export default function VibeCheckMVP(){
               <Search className="w-4 h-4"/>
               <input
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e=>setSearch(e.target.value)}
                 placeholder="Search title or artist"
                 className="bg-neutral-800 rounded-lg px-3 py-2 text-sm w-full outline-none"
               />
@@ -375,7 +362,8 @@ export default function VibeCheckMVP(){
 
         {/* Footer note */}
         <div className="mt-8 text-center text-xs text-neutral-400">
-          This guest demo uses a seeded catalog and approximates mood using valence/energy. Likes reduce exploration; skips increase it.
+          This guest demo uses a seeded catalog and approximates mood using valence/energy.
+          Likes reduce exploration; skips increase it.
         </div>
       </div>
     </div>
