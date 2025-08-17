@@ -1,15 +1,16 @@
 import React, { useMemo, useState } from 'react';
 
-const LIB = {
+// Buckets by valence/energy quadrant
+const QUAD_LIB = {
   highHigh: [
     { title: "Levitating", artist: "Dua Lipa" },
     { title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars" },
     { title: "Blinding Lights", artist: "The Weeknd" },
   ],
   highLow: [
-    { title: "bury a friend", artist: "Billie Eilish" },
     { title: "BLACK SKINHEAD", artist: "Kanye West" },
     { title: "Smells Like Teen Spirit", artist: "Nirvana" },
+    { title: "bury a friend", artist: "Billie Eilish" },
   ],
   lowHigh: [
     { title: "Lovely Day", artist: "Bill Withers" },
@@ -23,37 +24,70 @@ const LIB = {
   ],
 };
 
-function pickBucket({ valence, energy }) {
+// Light activity-based presets to blend in
+const ACTIVITY_LIB = {
+  Workout: [
+    { title: "POWER", artist: "Kanye West" },
+    { title: "Can't Hold Us", artist: "Macklemore & Ryan Lewis" },
+    { title: "Titanium", artist: "David Guetta ft. Sia" },
+  ],
+  Focus: [
+    { title: "Weightless", artist: "Marconi Union" },
+    { title: "Sunset Lover", artist: "Petit Biscuit" },
+    { title: "Intro", artist: "The xx" },
+  ],
+  Commute: [
+    { title: "Feel It Still", artist: "Portugal. The Man" },
+    { title: "Electric Feel", artist: "MGMT" },
+    { title: "Ocean Drive", artist: "Duke Dumont" },
+  ],
+  Relax: [
+    { title: "Holocene", artist: "Bon Iver" },
+    { title: "All We Ever Knew", artist: "The Head and the Heart" },
+    { title: "Bloom", artist: "The Paper Kites" },
+  ],
+  Party: [
+    { title: "One More Time", artist: "Daft Punk" },
+    { title: "Where Them Girls At", artist: "David Guetta" },
+    { title: "Don't Start Now", artist: "Dua Lipa" },
+  ],
+  Study: [
+    { title: "Time", artist: "Hans Zimmer" },
+    { title: "River Flows in You", artist: "Yiruma" },
+    { title: "Experience", artist: "Ludovico Einaudi" },
+  ],
+};
+
+function pickQuadrant({ valence, energy }) {
   if (energy >= 0.5 && valence >= 0.5) return 'highHigh';
   if (energy >= 0.5 && valence < 0.5)  return 'highLow';
   if (energy < 0.5 && valence >= 0.5)  return 'lowHigh';
   return 'lowLow';
 }
 
-export default function Playlist({ vals, onBack }) {
+export default function Playlist({ vals, activity, onBack }) {
   const [explore, setExplore] = useState(30); // 0..100
-  const base = useMemo(() => pickBucket(vals), [vals]);
+  const quad = useMemo(() => pickQuadrant(vals), [vals]);
 
-  // crude blend: as explore increases, mix in neighbors
+  // Blend logic: base on quadrant; as exploration increases, add activity & cross-quadrant tracks
   const tracks = useMemo(() => {
-    const baseList = LIB[base];
-    if (explore < 34) return baseList;
-    if (explore < 67) {
-      // mix with one neighbor
-      const neighborKey = base === 'highHigh' ? 'lowHigh'
-                        : base === 'lowHigh'  ? 'highHigh'
-                        : base === 'highLow'  ? 'lowLow'
-                        : 'highLow';
-      return [...baseList, ...LIB[neighborKey]].slice(0, 8);
-    }
-    // high explore: sample across all
-    return [...LIB.highHigh, ...LIB.highLow, ...LIB.lowHigh, ...LIB.lowLow].slice(0, 8);
-  }, [base, explore]);
+    const base = QUAD_LIB[quad] ?? [];
+    const act = activity ? (ACTIVITY_LIB[activity] ?? []) : [];
+    if (explore < 34) return [...base, ...act].slice(0, 8);
+
+    // medium explore: mix base + activity + one neighbor
+    const neighbor = quad === 'highHigh' ? 'lowHigh'
+                  : quad === 'lowHigh'  ? 'highHigh'
+                  : quad === 'highLow'  ? 'lowLow'
+                  : 'highLow';
+    const mix = [...base, ...act, ...(QUAD_LIB[neighbor] ?? [])];
+    return mix.slice(0, 8);
+  }, [quad, activity, explore]);
 
   const label =
-    base === 'highHigh' ? '✨ Uplifting / High Energy' :
-    base === 'highLow'  ? '⚡ Intense / Moody' :
-    base === 'lowHigh'  ? '🌤️ Chill / Feel-Good' :
+    quad === 'highHigh' ? '✨ Uplifting / High Energy' :
+    quad === 'highLow'  ? '⚡ Intense / Moody' :
+    quad === 'lowHigh'  ? '🌤️ Chill / Feel-Good' :
                           '🌙 Calm / Somber';
 
   return (
@@ -66,7 +100,10 @@ export default function Playlist({ vals, onBack }) {
           ← Adjust vibe
         </button>
         <h2 className="text-2xl font-bold">Your Playlist</h2>
-        <div className="w-28 text-right text-sm text-gray-300">{label}</div>
+        <div className="text-right text-sm text-gray-300">
+          <div>{label}</div>
+          {activity && <div className="text-xs text-gray-400">for {activity}</div>}
+        </div>
       </div>
 
       {/* Exploration control */}
