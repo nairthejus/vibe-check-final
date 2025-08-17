@@ -1,0 +1,99 @@
+import React from "react";
+import { Music2, Sparkles, Play } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function Landing({ onStart }) {
+  return (
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <div className="max-w-3xl w-full text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 flex items-center justify-center gap-3"
+        >
+          <Music2 className="w-7 h-7 text-neutral-200" />
+          <span className="text-xl tracking-tight">VibeCheck</span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.5 }}
+          className="text-4xl md:text-5xl font-semibold leading-tight"
+        >
+          Find music that matches your <span className="text-neutral-300">mood</span> &{" "}
+          <span className="text-neutral-300">moment</span>.
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="mt-4 text-neutral-300"
+        >
+          A portfolio MVP inspired by Spotify: adjust a Vibe Range, pick mood tags, and let the
+          queue adapt. No login required.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="mt-8 flex items-center justify-center gap-3"
+        >
+          <button
+            onClick={onStart}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-100 text-neutral-900 font-medium hover:bg-white transition"
+            aria-label="Start VibeCheck demo"
+          >
+            <Play className="w-5 h-5" />
+            Start Demo
+          </button>
+
+          <a
+            href="#how-it-works"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-900 text-neutral-100 border border-neutral-700 hover:border-neutral-500 transition"
+          >
+            <Sparkles className="w-5 h-5" />
+            How it works
+          </a>
+        </motion.div>
+
+        <motion.div
+          id="how-it-works"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+          className="mt-12 grid md:grid-cols-3 gap-4 text-left"
+        >
+          <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <div className="text-sm text-neutral-400">01</div>
+            <div className="mt-2 font-medium">Set Vibe Range</div>
+            <div className="text-sm text-neutral-400 mt-1">
+              Slider maps to valence (sad→happy) and energy (calm→intense).
+            </div>
+          </div>
+          <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <div className="text-sm text-neutral-400">02</div>
+            <div className="mt-2 font-medium">Add Mood & Activity</div>
+            <div className="text-sm text-neutral-400 mt-1">
+              Mood chips + Focus/Commute/Workout/Relax nudge recommendations.
+            </div>
+          </div>
+          <div className="bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+            <div className="text-sm text-neutral-400">03</div>
+            <div className="mt-2 font-medium">Tune by Feedback</div>
+            <div className="text-sm text-neutral-400 mt-1">
+              Likes tighten the queue; skips increase exploration. Try both.
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="mt-10 text-xs text-neutral-500">
+          Built for a PM portfolio. Guest demo uses seeded catalog and audio-feature heuristics.
+        </div>
+      </div>
+    </div>
+  );
+}
