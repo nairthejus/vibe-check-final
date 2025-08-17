@@ -3,21 +3,23 @@ import Landing from "./Landing.jsx";
 import VibeCheckMVP from "./VibeCheckMVP.jsx";
 
 export default function App() {
-  // Start directly if the URL has ?start=1 (handy for demos)
-  const urlStart = typeof window !== "undefined" && new URLSearchParams(location.search).get("start") === "1";
-  const [started, setStarted] = useState(urlStart || false);
+  // Parse URL
+  const url = typeof window !== "undefined" ? new URL(window.location.href) : null;
+  const forceIntro = url?.searchParams.get("intro") === "1" || url?.hash === "#how-it-works";
+  const urlStart = url?.searchParams.get("start") === "1";
 
-  // Remember if user already started (so refresh stays in demo)
+  // Determine start state
+  const [started, setStarted] = useState(() => {
+    if (forceIntro) return false;
+    if (urlStart) return true;
+    return typeof window !== "undefined" && sessionStorage.getItem("vibecheck-started") === "1";
+  });
+
+  // Save session flag
   useEffect(() => {
     if (started) sessionStorage.setItem("vibecheck-started", "1");
   }, [started]);
 
-  useEffect(() => {
-    const seen = sessionStorage.getItem("vibecheck-started") === "1";
-    if (seen) setStarted(true);
-  }, []);
-
   if (!started) return <Landing onStart={() => setStarted(true)} />;
   return <VibeCheckMVP />;
 }
-
