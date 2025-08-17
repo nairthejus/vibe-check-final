@@ -2,5 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optional: green slider thumb */
-input[type="range"] { accent-color: #22c55e; }
+/* ---------- Animated Background Gradient ---------- */
+@keyframes gradientShift {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+.bg-animated {
+  background: linear-gradient(120deg, #111827, #7c3aed, #ec4899, #0ea5e9, #111827);
+  background-size: 300% 300%;
+  animation: gradientShift 18s ease infinite;
+}
+
+/* ---------- Mini Visualizer Bars ---------- */
+.viz { display:inline-flex; gap:3px; }
+.viz span { width:3px; height:10px; background:rgba(255,255,255,.8); display:block;
+  animation: viz 1s ease-in-out infinite; }
+.viz span:nth-child(2){animation-delay:.1s}
+.viz span:nth-child(3){animation-delay:.2s}
+.viz span:nth-child(4){animation-delay:.3s}
+@keyframes viz { 0%,100%{transform:scaleY(0.6)} 50%{transform:scaleY(1.4)} }
+
+/* ---------- Sliders look nice ---------- */
+input[type="range"] { accent-color: #22c55e; } /* Tailwind green-500 */
