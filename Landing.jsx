@@ -2,6 +2,9 @@ import React from "react";
 import { Music2, Sparkles, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
+// 👇 Add your public PRD link here
+const PRD_URL = "https://your-public-PRD-link.com"; 
+
 export default function Landing({ onStart }) {
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
@@ -22,7 +25,8 @@ export default function Landing({ onStart }) {
           transition={{ delay: 0.05, duration: 0.5 }}
           className="text-4xl md:text-5xl font-semibold leading-tight"
         >
-          Find music that matches your <span className="text-neutral-300">mood</span> &{" "}
+          Find music that matches your{" "}
+          <span className="text-neutral-300">mood</span> &{" "}
           <span className="text-neutral-300">moment</span>.
         </motion.h1>
 
@@ -32,8 +36,8 @@ export default function Landing({ onStart }) {
           transition={{ delay: 0.1, duration: 0.5 }}
           className="mt-4 text-neutral-300"
         >
-          A portfolio MVP inspired by Spotify: adjust a Vibe Range, pick mood tags, and let the
-          queue adapt. No login required.
+          A portfolio MVP inspired by Spotify: adjust a Vibe Range, pick mood tags, 
+          and let the queue adapt. No login required.
         </motion.p>
 
         <motion.div
@@ -93,7 +97,29 @@ export default function Landing({ onStart }) {
         <div className="mt-10 text-xs text-neutral-500">
           Built for a PM portfolio. Guest demo uses seeded catalog and audio-feature heuristics.
         </div>
+
+        {/* Footer credit + PRD link */}
+        <div className="mt-6 text-xs text-neutral-500 flex flex-col md:flex-row items-center justify-center gap-3">
+          <span>Built by Thejus Nair · Portfolio MVP</span>
+          <span className="hidden md:inline">•</span>
+          <a
+            href={PRD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 hover:text-neutral-300"
+          >
+            View PRD
+          </a>
+          <span className="hidden md:inline">•</span>
+          <a
+            href="mailto:thejus@example.com"
+            className="hover:text-neutral-300"
+          >
+            Contact
+          </a>
+        </div>
       </div>
     </div>
   );
 }
+
