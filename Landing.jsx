@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Music2, Sparkles, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
-// 👇 Add your public PRD link here
-const PRD_URL = "https://your-public-PRD-link.com"; 
+// Add your public PRD link here
+const PRD_URL = "https://your-public-PRD-link.com";
 
 export default function Landing({ onStart }) {
+  const howRef = useRef(null);
+
+  const scrollHow = () => {
+    if (howRef.current && typeof howRef.current.scrollIntoView === "function") {
+      howRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // Fallback: jump using hash if ref isn't ready (very rare)
+      window.location.hash = "#how-it-works";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
       <div className="max-w-3xl w-full text-center">
@@ -25,8 +36,7 @@ export default function Landing({ onStart }) {
           transition={{ delay: 0.05, duration: 0.5 }}
           className="text-4xl md:text-5xl font-semibold leading-tight"
         >
-          Find music that matches your{" "}
-          <span className="text-neutral-300">mood</span> &{" "}
+          Find music that matches your <span className="text-neutral-300">mood</span> &{" "}
           <span className="text-neutral-300">moment</span>.
         </motion.h1>
 
@@ -36,7 +46,7 @@ export default function Landing({ onStart }) {
           transition={{ delay: 0.1, duration: 0.5 }}
           className="mt-4 text-neutral-300"
         >
-          A portfolio MVP inspired by Spotify: adjust a Vibe Range, pick mood tags, 
+          A portfolio MVP inspired by Spotify: adjust a Vibe Range, pick mood tags,
           and let the queue adapt. No login required.
         </motion.p>
 
@@ -46,7 +56,7 @@ export default function Landing({ onStart }) {
           transition={{ delay: 0.15, duration: 0.5 }}
           className="mt-8 flex items-center justify-center gap-3"
         >
-          {/* Start Demo button */}
+          {/* Start Demo */}
           <button
             onClick={onStart}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-100 text-neutral-900 font-medium hover:bg-white transition"
@@ -58,10 +68,7 @@ export default function Landing({ onStart }) {
 
           {/* Smooth scroll to How it works */}
           <button
-            onClick={() => {
-              const el = document.getElementById("how-it-works");
-              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
+            onClick={scrollHow}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-900 text-neutral-100 border border-neutral-700 hover:border-neutral-500 transition"
           >
             <Sparkles className="w-5 h-5" />
@@ -69,9 +76,10 @@ export default function Landing({ onStart }) {
           </button>
         </motion.div>
 
-        {/* How it works explainer */}
+        {/* How it works explainer (target) */}
         <motion.div
           id="how-it-works"
+          ref={howRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25, duration: 0.5 }}
@@ -117,10 +125,7 @@ export default function Landing({ onStart }) {
             View PRD
           </a>
           <span className="hidden md:inline">•</span>
-          <a
-            href="mailto:thejus@example.com"
-            className="hover:text-neutral-300"
-          >
+          <a href="mailto:thejus@example.com" className="hover:text-neutral-300">
             Contact
           </a>
         </div>
