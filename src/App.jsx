@@ -4,21 +4,28 @@ import Playlist from "./Playlist";
 import HowItWorksModal from "./HowItWorksModal";
 
 export default function App() {
+  // UI flow: landing → pick → playlist
+  const [step, setStep] = useState("landing");
+
+  // Modal
   const [showHowItWorks, setShowHowItWorks] = useState(false);
-  const [step, setStep] = useState("landing"); // landing | pick | playlist
+
+  // Vibe state
   const [vals, setVals] = useState({ valence: 0.6, energy: 0.6 });
-  const [activity, setActivity] = useState(null); // e.g., "Workout", "Focus"...
+
+  // Activity state (e.g., "Workout", "Focus", etc.)
+  const [activity, setActivity] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center px-6">
-      {/* Landing */}
+      {/* ---------------- Landing Page ---------------- */}
       {step === "landing" && (
         <div className="w-full max-w-3xl text-center">
           <h1 className="text-5xl font-bold mb-4">🎵 VibeCheck</h1>
           <p className="text-lg text-gray-200 mb-10">
             Music that matches how you feel, using{" "}
-            <span className="font-semibold">Valence</span> &{" "}
-            <span className="font-semibold">Energy</span>.
+            <span className="font-semibold">Valence</span> (positiveness) and{" "}
+            <span className="font-semibold">Energy</span> (intensity).
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
@@ -46,7 +53,7 @@ export default function App() {
 
           {/* Contact */}
           <div className="mt-12 text-sm text-gray-400 space-y-2">
-            <p>📌 Contact</p>
+            <p className="uppercase tracking-wide text-gray-500">Contact</p>
             <p>
               <a
                 href="https://www.linkedin.com/in/thejus-nair/"
@@ -62,6 +69,7 @@ export default function App() {
         </div>
       )}
 
+      {/* ---------------- How It Works Modal ---------------- */}
       {showHowItWorks && (
         <HowItWorksModal
           onStart={() => {
@@ -71,6 +79,7 @@ export default function App() {
         />
       )}
 
+      {/* ---------------- Valence/Energy Picker ---------------- */}
       {step === "pick" && (
         <ValenceEnergyPicker
           initial={vals}
@@ -84,8 +93,14 @@ export default function App() {
         />
       )}
 
+      {/* ---------------- Playlist (dynamic activity) ---------------- */}
       {step === "playlist" && (
-        <Playlist vals={vals} activity={activity} onBack={() => setStep("pick")} />
+        <Playlist
+          vals={vals}
+          activity={activity}
+          setActivity={setActivity}   // allow changing activity live on playlist screen
+          onBack={() => setStep("pick")}
+        />
       )}
     </div>
   );
