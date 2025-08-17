@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: make the slider thumb colorful */
+input[type="range"] { accent-color: #22c55e; } /* green-500 */
