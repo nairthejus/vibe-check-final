@@ -4,19 +4,12 @@ import Playlist from "./Playlist";
 import HowItWorksModal from "./HowItWorksModal";
 
 export default function App() {
-  // UI flow: landing → pick → playlist
   const [step, setStep] = useState("landing");
-
-  // Modal
   const [showHowItWorks, setShowHowItWorks] = useState(false);
-
-  // Vibe state
   const [vals, setVals] = useState({ valence: 0.6, energy: 0.6 });
-
-  // Activity state (e.g., "Workout", "Focus", etc.)
   const [activity, setActivity] = useState(null);
 
-  // Nice keyboard shortcuts: P = pick, H = how it works
+  // Keyboard shortcuts: P = pick, H = how it works
   useEffect(() => {
     const onKey = (e) => {
       const k = e.key.toLowerCase();
@@ -34,17 +27,39 @@ export default function App() {
         <div className="w-full max-w-3xl text-center">
           <h1 className="text-5xl font-bold mb-4 flex items-center justify-center">
             🎵 VibeCheck
-            {/* tiny visualizer */}
             <div className="viz ml-3">
               <span></span><span></span><span></span><span></span>
             </div>
           </h1>
 
-          <p className="text-lg text-white/90 mb-6">
+          <p className="text-lg text-white/90 mb-3">
             Music that matches how you feel, using{" "}
             <span className="font-semibold">Valence</span> (positiveness) and{" "}
             <span className="font-semibold">Energy</span> (intensity).
           </p>
+
+          {/* NEW explanatory line */}
+          <p className="text-sm text-white/70 mb-6">
+            Prototype demo built for a Product Management portfolio — try the flow, no login needed.
+          </p>
+
+          {/* NEW: Valence & Energy explanation */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 text-left">
+            <div className="rounded-xl bg-white/10 p-4">
+              <h3 className="font-semibold mb-1 text-pink-300">🎭 Valence</h3>
+              <p className="text-sm text-white/80">
+                Measures how positive, cheerful, or happy a song feels. High valence = upbeat
+                and joyful; low valence = moody, melancholic, or somber.
+              </p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4">
+              <h3 className="font-semibold mb-1 text-emerald-300">⚡ Energy</h3>
+              <p className="text-sm text-white/80">
+                Captures intensity and activity. High energy = loud, fast, and powerful; low energy = calm,
+                relaxed, or mellow.
+              </p>
+            </div>
+          </div>
 
           {/* How it works stepper */}
           <ul className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/85 mb-10">
@@ -86,7 +101,7 @@ export default function App() {
             </a>
           </div>
 
-          {/* Contact (inline) */}
+          {/* Contact */}
           <div className="mt-6 text-sm text-white/80 space-y-2">
             <p className="uppercase tracking-wide text-white/60">Contact</p>
             <p>
@@ -178,12 +193,12 @@ export default function App() {
         />
       )}
 
-      {/* ---------------- Playlist (dynamic activity) ---------------- */}
+      {/* ---------------- Playlist ---------------- */}
       {step === "playlist" && (
         <Playlist
           vals={vals}
           activity={activity}
-          setActivity={setActivity}   // allow changing activity live on playlist screen
+          setActivity={setActivity}
           onBack={() => setStep("pick")}
         />
       )}
