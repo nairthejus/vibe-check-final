@@ -46,6 +46,7 @@ export default function Landing({ onStart }) {
           transition={{ delay: 0.15, duration: 0.5 }}
           className="mt-8 flex items-center justify-center gap-3"
         >
+          {/* Start Demo button */}
           <button
             onClick={onStart}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-100 text-neutral-900 font-medium hover:bg-white transition"
@@ -55,15 +56,20 @@ export default function Landing({ onStart }) {
             Start Demo
           </button>
 
-          <a
-            href="#how-it-works"
+          {/* Smooth scroll to How it works */}
+          <button
+            onClick={() => {
+              const el = document.getElementById("how-it-works");
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-neutral-900 text-neutral-100 border border-neutral-700 hover:border-neutral-500 transition"
           >
             <Sparkles className="w-5 h-5" />
             How it works
-          </a>
+          </button>
         </motion.div>
 
+        {/* How it works explainer */}
         <motion.div
           id="how-it-works"
           initial={{ opacity: 0 }}
@@ -122,4 +128,3 @@ export default function Landing({ onStart }) {
     </div>
   );
 }
-
