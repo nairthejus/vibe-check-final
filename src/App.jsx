@@ -7,17 +7,18 @@ export default function App() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [step, setStep] = useState("landing"); // landing | pick | playlist
   const [vals, setVals] = useState({ valence: 0.6, energy: 0.6 });
+  const [activity, setActivity] = useState(null); // e.g., "Workout", "Focus"...
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center px-6">
-      {/* Landing Page */}
+      {/* Landing */}
       {step === "landing" && (
         <div className="w-full max-w-3xl text-center">
           <h1 className="text-5xl font-bold mb-4">🎵 VibeCheck</h1>
           <p className="text-lg text-gray-200 mb-10">
-            Music that matches how you feel, built with{" "}
-            <span className="font-semibold">Valence</span> (positiveness) and{" "}
-            <span className="font-semibold">Energy</span> (intensity).
+            Music that matches how you feel, using{" "}
+            <span className="font-semibold">Valence</span> &{" "}
+            <span className="font-semibold">Energy</span>.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-12">
@@ -43,7 +44,7 @@ export default function App() {
             </a>
           </div>
 
-          {/* Contact Section */}
+          {/* Contact */}
           <div className="mt-12 text-sm text-gray-400 space-y-2">
             <p>📌 Contact</p>
             <p>
@@ -61,7 +62,6 @@ export default function App() {
         </div>
       )}
 
-      {/* How it Works modal */}
       {showHowItWorks && (
         <HowItWorksModal
           onStart={() => {
@@ -71,21 +71,21 @@ export default function App() {
         />
       )}
 
-      {/* Valence/Energy Picker */}
       {step === "pick" && (
         <ValenceEnergyPicker
           initial={vals}
+          initialActivity={activity}
           onBack={() => setStep("landing")}
-          onConfirm={(v) => {
-            setVals(v);
+          onConfirm={({ valence, energy, activity: act }) => {
+            setVals({ valence, energy });
+            setActivity(act || null);
             setStep("playlist");
           }}
         />
       )}
 
-      {/* Playlist */}
       {step === "playlist" && (
-        <Playlist vals={vals} onBack={() => setStep("pick")} />
+        <Playlist vals={vals} activity={activity} onBack={() => setStep("pick")} />
       )}
     </div>
   );
